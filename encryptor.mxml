@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        width="872" height="679" backgroundColor="#DAF384">
+ <fx:Declarations>
+  <!-- Place non-visual elements (e.g., services, value objects) here -->
+  <mx:RadioButtonGroup id="radiogroup1"/>
+  <mx:RadioButtonGroup id="radiogroup2"/>
+ </fx:Declarations>
+
+ <fx:Script>
+  <![CDATA[
+  
+  
+/*Encryption Program 3
+Created By:Jeremy Francispillai
+Created on: April 19, 2012  
+*/
+  
+  import mx.controls.Alert;
+
+private var whichOne:String="encrypt";
+private var option:int=1;
+private var pickType:String;
+
+
+
+//checks which options are selected
+private function whichType():void {
+
+	//if the encryptor is selected
+	if(whichOne == "encrypt") {
+		if(option==1){
+		pickType="e1";
+		} else if(option==2){
+		pickType="e2";
+		}
+		else if(option==3){
+		pickType="e3";
+		}
+	} 
+	//if the decrypter is selected
+	else if(whichOne == "decrypt") {
+		if(option==1){
+		pickType="d1";
+		} else if(option==2){
+		pickType="d2";
+		}
+		else if(option==3){
+		pickType="d3";
+		}
+	}
+}
+
+private function evaluate():void{
+	var isNumber:Boolean=true;
+	//checks to see if the key is a number
+	for(var i:int=0;i<key1.length;i++){
+	if(key1.text.charCodeAt(i)!=45){
+	if (key1.text.charCodeAt(i)>57 || key1.text.charCodeAt(i)<48){
+	isNumber=false;
+	}
+	}
+	}
+	if(isNumber){
+	//clears the output box
+	output.text="";
+	//runs the encrypt/decrypt functions depending of the selectd options
+	switch(pickType){
+	case "e1":
+	output.text=encrypt1(input.text);
+	break;
+	case "d1":
+	output.text=decrypt1(input.text);
+	break; 
+	case "e2":
+	encrypt2(input.text);
+	break;
+	case "d2":
+	decrypt2(input.text);
+	break;
+	case "e3":
+	encrypt3(input.text);
+	break;
+	case "d3":
+	decrypt3(input.text);
+	break;       
+	}
+	} 
+	else{
+	//gives an alert if the key is not a number
+	Alert.show("Please enter a number for the key value. \n\t\t\t\t\t(integer)");
+	}
+}
+
+private function encrypt1(text:String):String {
+	var outE:String="";
+	for (var i:int=0;i<=text.length;i++) {
+	if(text.charCodeAt(i)+Number(key1.text)<256 && text.charCodeAt(i)+Number(key1.text)>=0){
+	outE+=String.fromCharCode((text.charCodeAt(i)+Number(key1.text)));
+	} 
+	else if(text.charCodeAt(i)+Number(key1.text)>255) {
+	
+	outE+=String.fromCharCode((text.charCodeAt(i)+Number(key1.text))-256);
+	} 
+	else if(text.charCodeAt(i)+Number(key1.text)<0){
+	outE+=String.fromCharCode((text.charCodeAt(i)+Number(key1.text))+256);
+	}
+	}
+	return outE;
+}
+
+private function decrypt1(text:String):String {
+	var outD:String="";
+	for (var i:int=0;i<=text.length;i++) {
+	if(text.charCodeAt(i)-Number(key1.text)<256 && text.charCodeAt(i)-Number(key1.text)>=0) {
+	outD+=String.fromCharCode((text.charCodeAt(i)-Number(key1.text)));
+	} 
+	else if (text.charCodeAt(i)-Number(key1.text)>255) {
+	outD+=String.fromCharCode((text.charCodeAt(i)-Number(key1.text))-256);
+	} 
+	else if (text.charCodeAt(i)-Number(key1.text)<0) {
+	outD+=String.fromCharCode((text.charCodeAt(i)-Number(key1.text))+256);
+	}
+	}
+	return outD; 
+}
+
+private function encrypt2(text:String):void {
+	var numLetters:int;
+	var output2:String="";
+	var output3:String="";
+	//replaces spaces with number of letters of preceding word
+	for (var i:int=0;i<=text.length;i++) {
+	if(text.charAt(i)==" ") {
+	if(text.charAt(i-1)==" ") {
+	output2+=" ";
+	} else {
+	output2+=String(numLetters);
+	numLetters=0;
+	}
+	} else {
+	output2+=text.charAt(i);
+	numLetters++;
+	}
+	}
+	//reverses the text 
+	for (var j:int=output2.length-1;j>=0;j--){
+	output3+=output2.charAt(j);
+	}
+	//applys the key
+	output.text=encrypt1(output3);
+}
+
+private function decrypt2(text:String):void {
+	var output2:String="";
+	var output3:String="";
+	var numNumber:String="";
+	
+	output2=decrypt1(text);
+	
+	for (var j:int=output2.length-1;j>=0;j--) {
+	output3+=output2.charAt(j);
+	}
+	for(var k:int=0;k<output3.length;k++) {
+	if (output3.charCodeAt(k)<48 || output3.charCodeAt(k)>57) {
+	if (output3.charCodeAt(k-1)>47 && output3.charCodeAt(k-1)<58){
+	output.text+=" "+output3.charAt(k);
+	} else{
+	output.text+=output3.charAt(k);
+	}
+	}
+	}
+}
+
+private function encrypt3(text:String):void{
+	/*puts it backwards
+	applys key multiplyed by a random number
+	add the random number to the end
+	applys the original key
+	*/
+	var output2:String="";
+	var output3:String="";
+	var output4:String="";
+	var randomNum:int=Math.ceil(Math.random()*9);
+	//reverses text
+	for (var k:int=text.length-1;k>=0;k--){
+	output2+=text.charAt(k);
+	}
+	//applys key multiplyed by a random number 
+	for (var j:int=0;j<=(output2.length-1);j++){
+	if(output2.charCodeAt(j)+(Number(key1.text)*randomNum)<256 && output2.charCodeAt(j)+(Number(key1.text)*randomNum)>=0){
+	output3+=String.fromCharCode((output2.charCodeAt(j)+(Number(key1.text)*randomNum)));
+	} 
+	else if(output2.charCodeAt(j)+(Number(key1.text)*randomNum)>255) {
+	var tempNum:Number=output2.charCodeAt(j)+(Number(key1.text)*randomNum);
+	var tempNum2:Number=tempNum % 256;
+	output3+=String.fromCharCode(tempNum2);
+	} 
+	else if(output2.charCodeAt(j)+(Number(key1.text)*randomNum)<0){
+	var tempNum3:Number=output2.charCodeAt(j)+(Number(key1.text)*randomNum);
+	var tempNum4:Number=256-(((-1)*(tempNum3)) % 256);
+	output3+=String.fromCharCode(tempNum4);
+	}
+	}
+	//adds the random number to the end of text
+	output3+=randomNum;
+	//applys the original key
+	output.text=encrypt1(output3);
+}
+
+
+private function decrypt3(text:String):void{
+	var output2:String="";
+	var output3:String="";
+	var output4:String="";
+	
+	output2=decrypt1(text);
+	
+	var randomNum:int=int(output2.charAt(output2.length-1));
+	for(var j:int=0;j<output2.length-1;j++){
+	output3+=output2.charAt(j);
+	}
+	for (var k:int=0;k<=output3.length;k++) {
+	if(output3.charCodeAt(k)-(Number(key1.text)*randomNum)<256 && output3.charCodeAt(k)-(Number(key1.text)*randomNum)>=0) {
+	output4+=String.fromCharCode((output3.charCodeAt(k)-(Number(key1.text)*randomNum)));
+	} 
+	else if (output3.charCodeAt(k)-(Number(key1.text)*randomNum)>255) {
+	var tempNum:Number=output3.charCodeAt(k)-(Number(key1.text)*randomNum);
+	var tempNum2:Number=tempNum % 256;
+	output4+=String.fromCharCode(tempNum2);
+	} 
+	else if (output3.charCodeAt(k)-(Number(key1.text)*randomNum)<0) {
+	var tempNum3:Number=output3.charCodeAt(k)-(Number(key1.text)*randomNum);
+	var tempNum4:Number=256-(((-1)*(tempNum3)) % 256);
+	output4+=String.fromCharCode(tempNum4);
+	
+	}
+	}
+	for (var l:int=output4.length-1;l>=0;l--){
+	output.text+=output4.charAt(l);
+	}
+}
+
+private function toTop():void{
+	
+	if(output.text!="") {
+		input.text=output.text;
+		output.text="";
+	}
+
+}
+  
+  
+  ]]>
+ </fx:Script>
+ <mx:TextArea x="177" y="68" width="574" height="154" id="input"/>
+ <mx:TextArea x="177" y="272" width="574" height="154" id="output"/>
+ <mx:Label x="290.5" y="10" text="Encryptor/Decrypter" fontWeight="bold" textAlign="center" fontSize="18"/>
+ <mx:Label x="177" y="42" text="Enter text here:" fontSize="12" fontWeight="bold"/>
+ <mx:Label x="177" y="244" text="Output:" fontSize="12" fontWeight="bold"/>
+
+ <mx:RadioButton x="46" y="68" label="Encrypt" groupName="radiogroup1" fontWeight="bold" fontSize="11" click="whichOne=&quot;encrypt&quot;" selected="true"/>
+ <mx:RadioButton x="46" y="94" label="Decrypt" groupName="radiogroup1" fontWeight="bold" fontSize="11" click="whichOne=&quot;decrypt&quot;"/>
+ 
+ <mx:RadioButton x="46" y="173" label="Option 1" groupName="radiogroup2" fontWeight="bold" fontSize="11" click="option=1" selected="true"/>
+ <mx:RadioButton x="46" y="199" label="Option 2" groupName="radiogroup2" fontWeight="bold" fontSize="11" click="option=2"/>
+ <mx:RadioButton x="46" y="225" label="Option 3" groupName="radiogroup2" fontWeight="bold" fontSize="11" click="option=3"/>
+ <mx:Button x="46" y="357" label="Enter" width="113" height="43" fontSize="20" click="whichType();evaluate();"/>
+ <mx:Label x="46" y="147" text="Choose Type:"/>
+ <mx:Label x="46" y="280" text="Enter Key Value: "/>
+ <mx:TextInput x="46" y="306" width="101" id="key1" text="0" textAlign="left"/>
+ <mx:Button x="177" y="435" label="Bring To Top" click="toTop()" fontSize="10" height="20"/>
+ 
+ 
+ 
+
+</s:Application>
